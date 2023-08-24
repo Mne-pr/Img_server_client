@@ -11,6 +11,10 @@ node_modules/
 processBlur
 processInverse
 
+# processed image files
+inputImages/*
+outputImages/*
+
 -- mainServer --
 
 
