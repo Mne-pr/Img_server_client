@@ -25,4 +25,4 @@ status_collector.py 파일은 동작하는 서버의 자원 사용현황을 일�
 python3 status_collector.py 로 실행하세요</br>
 python3 status_collector.py 0.5 - 자원 확인 0.5초 주기<br></br>
 
-
+방화벽에서 15151 포트를 해제하세요</br></br>
