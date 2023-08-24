@@ -15,6 +15,12 @@ ex) processBlur.cpp 파일을 빌드하는 경우</br>
 g++ -o processBlur processBlur.cpp imageBlur.cpp -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lstdc++fs</br></br>
 
 이후 subServer/server/main.js 파일을 실행하십시오</br>
-ex) nodemon subServer/server/main.js
+ex) nodemon subServer/server/main.js</br></br>
+
+status_collector.py 파일은 동작하는 서버의 자원 사용현황을 일정 주기마다 파악하는 프로그램입니다.</br>
+python3 status_collector.py 로 실행하세요</br>
+
+ex) 
+python3 status_collector.py 0.5 - 0.5초 주기로 자원 사용현황 확인
 
 
