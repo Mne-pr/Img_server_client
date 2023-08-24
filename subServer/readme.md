@@ -10,11 +10,13 @@ apt-get install g++</br>
 apt-get install libopencv-dev</br>
 npm i -g nodemon</br>
 
-이후, subServer/server/ImageFunc/\*.cpp 파일들을 빌드하십시오</br>
+/subServer/server 에서 npm install 을 실행하십시오
+
+이후, /subServer/server/ImageFunc/\*.cpp 파일들을 빌드하십시오</br>
 ex) processBlur.cpp 파일을 빌드하는 경우</br>
 g++ -o processBlur processBlur.cpp -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lstdc++fs</br></br>
 
-이후 subServer/server/main.js 파일을 실행하십시오</br>
+이후 /subServer/server/main.js 파일을 실행하십시오</br>
 ex) nodemon subServer/server/main.js</br></br>
 
 status_collector.py 파일은 동작하는 서버의 자원 사용현황을 일정 주기마다 파악하는 프로그램입니다.</br>
