@@ -1,0 +1,20 @@
+<h1>서브서버</h1>
+<h3>엣지 컴퓨팅을 위한 서브서버입니다.</h3>
+
+구름ide의 인스턴스, AWS의 {Ubuntu Server 22.04 LTS(HVM), SSD Volume Type} 인스턴스에서 정상작동합니다.</br>
+아래의 코드를 실행해 프로젝트에서 필요한 패키지들을 다운받기 바랍니다.</br></br>
+
+apt-get install python3</br>
+apt-get install nodejs</br>
+apt-get install g++</br>
+apt-get install libopencv-dev</br>
+npm i -g nodemon</br></br>
+
+이후, subServer/server/ImageFunc/*.cpp 파일들을 빌드하십시오</br>
+ex) processBlur.cpp 파일을 빌드하는 경우</br>
+g++ -o processBlur processBlur.cpp imageBlur.cpp -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lstdc++fs</br></br>
+
+이후 subServer/server/main.js 파일을 실행하십시오</br>
+ex) nodemon subServer/server/main.js
+
+

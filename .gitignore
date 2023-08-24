@@ -1,0 +1,17 @@
+-- subServer --
+
+# about goormide file
+.flowconfig
+goorm.manifest
+
+# packages
+node_modules/
+
+# execuable
+processBlur
+processInverse
+
+-- mainServer --
+
+
+-- mainClient --
