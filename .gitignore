@@ -1,21 +1,16 @@
--- subServer --
 
-# about goormide file
+# about goormide file - subServer
 .flowconfig
 goorm.manifest
 
-# packages
+# packages - mainServer,mainClient,subServer
 node_modules/
 
-# execuable
+# execuable - mainServer,subServer
 processBlur
 processInverse
 
-# processed image files
+# processed image files - mainServer,subServer
 inputImages/*
 outputImages/*
 
--- mainServer --
-
-
--- mainClient --
