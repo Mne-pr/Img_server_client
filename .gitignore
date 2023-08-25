@@ -11,6 +11,8 @@ processBlur
 processInverse
 
 # processed image files - mainServer,subServer
+inputImages/*
+outputImages/*
 !inputImages/Dummy
 !outputImages/Dummy
 

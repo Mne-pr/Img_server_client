@@ -1,5 +1,5 @@
 // 프로젝트 위치
-export const projPath = '/home/ubuntu/mainServer/server'
+export const projPath = '/home/ubuntu/git/mainServer/server'
 
 // 환경에 따라 달라짐. 입,출력 영상이 저장되는 위치
 export const inputImagesPath =  '/public/images/inputImages'

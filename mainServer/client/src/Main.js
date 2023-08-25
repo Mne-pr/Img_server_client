@@ -4,7 +4,7 @@ import axios from 'axios'
 
 
 // real server address 
-const S = 'http://52.79.196.164:15151' 
+const S = 'http://13.124.148.225:15151' 
 
 function App(props) {
 	const servType = props.servType
