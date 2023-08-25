@@ -79,7 +79,7 @@ app.post('/DoIt', upload.single('image'),(req, res) => {
 	// 파일 이름에 시간 정보 추가
 	const timestamp = new Date().toISOString().replace(/[:.]/g, '') 
 		// 날짜와 시간에서 콜론,마침표 제거
-	const fileName = `${path.parse(originalFileName).name}-${
+	let fileName = `${path.parse(originalFileName).name}-${
 		timestamp
 		}${path.extname(originalFileName)}` 
 		// 원본파일 이름에 타임스탬프 추가
@@ -115,9 +115,14 @@ app.post('/DoIt', upload.single('image'),(req, res) => {
 	// 명령에 맞는 적절한 실행파일 실행
 	execSync(com)
 
-	// 이후 생성된 파일위치 이동
-	fs.renameSync(`${projPath}${inputImagesPath}/${command}_${fileName}`, 
-		`${projPath}${outputImagesPath}/${command}_${fileName}`)
+	// 이후 생성된 파일위치 이동.
+  try{
+   	fs.renameSync(`${projPath}${inputImagesPath}/${command}_${fileName}`, 
+                  `${projPath}${outputImagesPath}/${command}_${fileName}`) 
+  } catch { //없는 경우(만약) 파일이 생성되지 않았을 것. 더미파일을 대신 가져온다.
+    fileName = "Dummy.jpg"
+    fs.copyFileSync(projPath+"/ImageFunc/Dummy.jpg", `${projPath}${outputImagesPath}/${command}_${fileName}`)
+  }
 
 	// 처리된 이미지 파일의 다운로드 링크(사실 이름)를 반환
 	const downloadLink = `${command}_${fileName}`

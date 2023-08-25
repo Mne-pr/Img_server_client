@@ -8,6 +8,7 @@ apt-get install python3</br>
 apt-get install nodejs</br>
 apt-get install g++</br>
 apt-get install libopencv-dev</br>
+~~apt-get install libmagick++-dev.. gif를 처리하기 위한 라이브러리였으나.. 라이브러리 다운 시 빌드가 안 되어 실패~~</br>
 npm i -g nodemon</br></br>
 
 /subServer/server 에서 npm install 을 실행하십시오</br></br>

@@ -14,3 +14,8 @@ processInverse
 inputImages/*
 outputImages/*
 
+# some test files
+test/
+
+# unsupport files
+*.gif
