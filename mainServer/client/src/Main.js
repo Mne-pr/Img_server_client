@@ -4,11 +4,12 @@ import axios from 'axios'
 
 
 // real server address 
-const S = 'http://13.124.148.225:15151' 
+const S = 'http://shr.mne-pr.site:15151' 
 
 function App(props) {
 	const servType = props.servType
-
+	const isMobile = window.innerWidth <= 500;
+	
 	// entire page needed
 	const [selectedImage, setSelectedImage] = useState(null)
 	const [errorMessage, setErrorMessage] = useState('')
@@ -183,7 +184,7 @@ function App(props) {
 			{/* selected image */}
 			<div style={{ margin: '20px' }}>
 				<div style={{justifyContent: 'center'}}>
-					<h1>image transformer</h1>
+					<h1 style={{ fontSize: isMobile ? '24px' : '36px' }}>image transformer</h1>
 				</div>
 				<form onSubmit={handleSubmit}>
 
@@ -192,7 +193,8 @@ function App(props) {
 						{...getRootProps()}
 						id="imgUploadContainer"
 						style={{
-							width: 500, height: 500,
+							width:  isMobile ? 300 : 500, 
+							height: isMobile ? 300 : 500,
 							border: '1.5px dashed black',
 							display: 'flex',
 							flexDirection: 'column',
@@ -207,10 +209,10 @@ function App(props) {
 						{/* input image place message */}
 						<input {...getInputProps()} />
 						{isDragActive && !selectedImage ? (
-							<p>drop image here</p>
+							<p style={{ fontSize: isMobile ? '10px' : '18px' }}>drop image here</p>
 						) : !selectedImage ? (
 							<React.Fragment>
-								<p>select image by click or drag and drop</p>
+								<p style={{ fontSize: isMobile ? '10px' : '18px' }}>select image by click or drag and drop</p>
 							</React.Fragment>
 						) : null}
 
