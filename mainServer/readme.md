@@ -8,6 +8,7 @@ apt-get install python3</br>
 apt-get install nodejs</br>
 apt-get install g++</br>
 apt-get install libopencv-dev</br>
+apt-get install cmake</br>
 npm i -g nodemon</br></br>
 
 /mainServer/server와 /mainServer/client 에서 npm install 을 실행합니다.</br></br>
@@ -29,7 +30,7 @@ status_collector.py 파일은 동작하는 서버의 자원 사용현황을 일�
 python3 status_collector.py 로 실행하세요</br>
 python3 status_collector.py 0.5 - 자원 확인 0.5초 주기</br></br>
 
-방화벽에서 15151, 10501 포트를 해제하세요</br></br>
+방화벽에서 15151, 10501 포트를 해제합니다.</br></br>
 
 nodejs 설치/실행에 문제가 있는 경우 조치할 수 있는 해결방안은 다음과 같습니다.</br>
 libnode72 패키지, nodejs 패키지를 삭제하고 nodejs 패키지를 재설치합니다.</br>
