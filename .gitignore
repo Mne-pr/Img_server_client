@@ -21,3 +21,6 @@ test/
 
 # unsupport files
 *.gif
+
+# secret files
+howtoddns

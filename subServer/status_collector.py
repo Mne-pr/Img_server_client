@@ -27,12 +27,12 @@ def collect_cpu_usage():
         data = stdout.strip().split()
         user_cpu = system_cpu = 0.0
         if len(data) >= 8:
-            if data[1] == "us, ":
-                user_cpu = float(100.0)
-                system_cpu = float(data[2])
-            else:
+            try:
                 user_cpu = float(data[1])
                 system_cpu = float(data[3])
+            except:
+                user_cpu = float(100.0)
+                system_cpu = float(data[2])
             total_cpu = user_cpu + system_cpu
             return timestamp, total_cpu
     return None
