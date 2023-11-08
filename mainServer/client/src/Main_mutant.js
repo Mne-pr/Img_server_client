@@ -6,8 +6,6 @@ import axios from 'axios'
 const S = 'http://shr.mne-pr.site:15151' 
 
 function App(props) {
-	// const servType = props.servType
-	const isMobile = window.innerWidth <= 500;
 	
 	// entire page needed
 	const [selectedImage, setSelectedImage] = useState(null)
@@ -208,112 +206,109 @@ function App(props) {
 	// }
 	
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center',  alignItems: 'center',width: "100%", height: "100vh"}}>
+		<div class="main">
 			
-			<div id="mainText" style={{ justifyContent: 'center' }}>
-					<h1 style={{ fontSize: isMobile ? '24px' : '36px' }}>image transformer</h1>
+			<div id="mainText" style={{ justifyContent: 'center', marginBottom: '-2%'}}>
+					<h1 style={{ fontSize: "4vw" }}>image transformer</h1>
 			</div>
 			
-			<div ref={imgContainerRef} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: "70%", height: `${containerH/2}px`,  marginBottom: '10px'}}>
+			<div ref={imgContainerRef} class="imgRow" style={{height: `${containerH/2}px`}}>
 				<form onSubmit={handleSubmit} style={{ width: "50%", margin: '5px' }}>
 					{/* input image pannel */}
 					<div
 						{...getRootProps()}
 						id="imgUploadContainer"
-						style={{
-							width:  '100%',
-							height: `${containerH/2}px`, 
-							border: '1.5px dashed black',
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							justifyContent: 'center',
-							cursor: 'pointer',
-							position: 'relative',
-						}}
+						class="imgBox" style={{height: `${containerH/2}px`}}
 					>
 						{/* input image place message */}				
 						<input {...getInputProps()} />
-						{isDragActive && !selectedImage ? ( // 조만간 이 글씨도 바뀌어야 할 것임..
-							<p style={{ fontSize: isMobile ? '10px' : '15px' }}>drop image here</p>
+						{isDragActive && !selectedImage ? (
+							<p style={{ fontSize: "1.5vw" }}>drop image here</p>
 						) : !selectedImage ? (
-							<React.Fragment>
-								<p style={{ fontSize: isMobile ? '10px' : '15px' }}>select image by click or drag and drop</p>
-							</React.Fragment>
+							<React.Fragment> <p style={{ fontSize: "1.5vw" }}>select image by "CLICK" or drag and drop</p> </React.Fragment>
 						) : null}
 
 						{/* selected image */}
 						{selectedImage && (
 							<img
 								src={isThisSimulate === "sim" ? "Marigold.webp" : URL.createObjectURL(selectedImage)}
-								alt="selected"
-								style={{
-									maxWidth: '100%', maxHeight: '100%',
-									position: 'absolute',
-									top: '50%', left: '50%',
-									transform: 'translate(-50%, -50%)',
-								}}
+								alt="selected" class="img"
 							/>
 						)}
 					</div>
 				</form>
 
-				<div
-					id="imgDownloadContainer"
-					style={{
-						width:  '50%',
-						height: `${containerH/2}px`,
-						border: '1.5px dashed black',
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						justifyContent: 'center',
-						cursor: 'pointer',
-						position: 'relative',
-						margin: '5px'
-					}}
-				>
-						<input {...getInputProps()} />
-						{isDragActive && !selectedImage ? (
-							<p style={{ fontSize: isMobile ? '10px' : '15px' }}>drop image here</p>
-						) : !selectedImage ? (
-							<React.Fragment>
-								<p style={{ fontSize: isMobile ? '10px' : '15px' }}>select image by click or drag and drop</p>
-							</React.Fragment>
-						) : null}
-
-						{selectedImage && (
-							<img
-								src={isThisSimulate === "sim" ? "Marigold.webp" : URL.createObjectURL(selectedImage)}
-								alt="selected"
-								style={{
-									maxWidth: '100%', maxHeight: '100%',
-									position: 'absolute',
-									top: '50%', left: '50%',
-									transform: 'translate(-50%, -50%)',
-								}}
-							/>
-						)}
+				<div style={{ width: "50%", margin: '5px' }}>
+					<div
+						id="imgDownloadContainer"
+						class="imgBox" style={{height: `${containerH/2}px`}}
+					>
+						<React.Fragment> <p style={{ fontSize: "1.5vw" }}>transformed image from server</p> </React.Fragment>
+						{/* 서버에서 이미지 받아서 출력하는 곳 */}
+					</div>
 				</div>
 			</div>
 		
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width:"70%", height:"20%"}}>
-				<div style={{ width: "20%", height: "100%",  margin:'5px' }}> {/* 사용할 수 있는 정보처리의 옵션들도 모두 서버에서 받아오는 게 맞지 않을까 */}
-					<select size="10" style={{ width: "100%", height: "100%" }}>
-						<option value="option1">옵션 1</option> 
-						<option value="option2">옵션 2</option>
-						<option value="option3">옵션 3</option>
-					</select>
+			<div class="optRow">
+				{/* 사용할 수 있는 정보처리의 옵션들도 모두 서버에서 받아오는 게 맞지 않을까 */}
+				<div class="selectOpColumn">
+					<button class="selectOpBtn">옵션 1</button>
+					<button class="selectOpBtn">옵션 2</button>
+					<button class="selectOpBtn">옵션 3</button>
+					<button class="selectOpBtn">옵션 4</button>
+					<button class="selectOpBtn">옵션 5</button>
+					<button class="selectOpBtn">옵션 6</button>
+					<button class="selectOpBtn">옵션 7</button>
+					<button class="selectOpBtn">옵션 8</button>
+					<button class="selectOpBtn">옵션 9</button>
+					<button class="selectOpBtn">옵션 10</button>
+					<button class="selectOpBtn">옵션 11</button>
+					<button class="selectOpBtn">옵션 12</button>
 				</div>
-				<div style={{ width: "60%", height: "100%", border: '1.5px solid black',  margin:'5px' }}>
-					여기는 옵션창 
+				<div style={{ width: "60%", border: '1.5px solid black',  margin:'5px', backgroundColor: "#eee" }}>
+					옵션창
 				</div>
-				<div style={{ width: "20%", height: "100%",  margin:'5px' }}>
-					<select size="10" style={{ width: "100%", height: "100%" }}>
-						<option value="option1">옵션 1</option> 
-						<option value="option2">옵션 2</option>
-						<option value="option3">옵션 3</option>
-					</select>
+				<div class="selectedOpColumn">
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw", width: "100%"}}>옵션 1</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 2</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 3</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 4</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 5</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw", width: "100%"}}>옵션 1</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 2</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 3</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 4</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
+					<div class="selectedOpRow">
+						<div style={{ fontSize: "1.2vw"}}>옵션 5</div>
+						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
+					</div>
 				</div>
 			</div>
 		
