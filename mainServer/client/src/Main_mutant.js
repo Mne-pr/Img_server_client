@@ -1,18 +1,19 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import axios from 'axios'
+
+import { BlurOption, InverseOption } from './additional_option'
 
 // real server address 
 const S = 'http://shr.mne-pr.site:15151' 
 
 function App(props) {
 	
-	// entire page needed
-	const [selectedImage, setSelectedImage] = useState(null)
+	
 	// eslint-disable-next-line
 	const [errorMessage, setErrorMessage] = useState('')
 	// eslint-disable-next-line
-	const [imageSize, setImageSize] = useState({ width: 0, height: 0})
 	const [fileName, setFileName] = useState('')
 	// eslint-disable-next-line
 	const [selectedOperation, setSelectedOperation] = useState('Blur')
@@ -27,47 +28,58 @@ function App(props) {
 	const [isWhatServer, setIsWhatServer] = useState("")
 
 	// simulation
-	const [isThisSimulate, setIsThisSimulate] = useState("normal")
+	// const [isThisSimulate, setIsThisSimulate] = useState("normal")
 	// const operationList = ["Blur","Inverse"]
 
-	// plus option
-	const [blurMaskSize, setBlurMaskSize] = useState({width: 11, height: 11})
-	// const handleBlurWidthChange = (event) => {setBlurMaskSize((prevState) => ({...prevState, width:event.target.value}))}
-	// const handleBlurHeightChange = (event) => {setBlurMaskSize((prevState) => ({...prevState, height:event.target.value}))}
+
+	// ---------------------------------------------- 정리된 상태들
+
+	// 가로길이 구하기 위한 훅
+	const imgContainerRef               = useRef(null)
+	// 전체화면 높이
+	const [containerH, setContainerH]   = useState(0)
+	// 작업목록
+	const [taskList, setTaskList]       = useState([[0,'블러','블러처리를 합니다'],[1,'반전','반전처리를 합니다']])
+	// 작업내용
+	const [curTask, setCurTask]         = useState(-1)
+	// 진행된 작업목록 - 서버로 넘길 것
+	const [comTaskList,setComTaskList]  = useState([]);
+	// 이미지 선택여부 - 이미지 데이터
+	const [iSelected, setISelected]     = useState(null)
+	// 이미지 크기
+	const [iSize, setISize]             = useState({ w: 0, h: 0})
+	// 블러 마스크 크기
+	const [mSize, setMSize]             = useState({ w: 11, h: 11 })
+	// 진행된 작업 상세정보 출력여부
+	const [showComTask, setShowComTask] = useState(-1)
+	// 진행된 작업 아이디
+	var comTaskId = 0
 
 
-	// 이미지 너비높이
-	const imgContainerRef = useRef(null)
-	const [containerH, setContainerH] = useState(0)
-	// useEffect == onCreate
-	useEffect(()=> {
-		const updateContainerH = () => {
-			const containerW = imgContainerRef.current.clientWidth
-			setContainerH(containerW)
-		}
-		// 초기 로딩 시 호출
-		updateContainerH()
-		// 윈도우 크기 변경할 때마다 호출
-		window.addEventListener('resize',updateContainerH)
-		// 컴포넌트가 언마운트될 때? 이벤트 리스너 제거
-		return () => {
-			window.removeEventListener('resize',updateContainerH)
-		}
-	}, [])
 
-	  
-
-	// function getRandomInt(min, max) {
+	// function getRandomInt(min, max) { // 시뮬레이션용 랜덤
 	// 	// 실수 입력방지용
 	// 	min = Math.ceil(min)
 	// 	max = Math.floor(max)
 	// 	return Math.floor(Math.random() * (max - min + 1)) + min
 	// }
 
+	const resetOptSelected = () => {
+		setMSize({ w:11, h:11 })
+		setCurTask(-1)
+	}
 
+	const resetAll = () => { // 작업목록까지 들고올까 했는데 일단보류
+		resetOptSelected()
+		setComTaskList([])
+		setISelected(null)
+		setISize({ w:0, h:0 })
+	}
 
+	// 이미지 입력받기 - 차후 수정(상태관련)
+	const isImageFile = (file) => { return file.type.startsWith('image/') }
 	const onDrop = (acceptedFiles) => {
-		handleCancel()
+		resetAll()
 		const originalFileName = acceptedFiles[0].name
 		const renamedFileName = originalFileName.replace(/[( )]/g, '')
 		setFileName(renamedFileName)
@@ -81,64 +93,38 @@ function App(props) {
 					const image = new Image()
 					image.src = reader.result
 					image.onload = () => {
-						setSelectedImage(file)
-						setImageSize({width: image.width, height: image.height})
+						setISelected(file)
+						setISize({w: image.width, h: image.height})
 					}
 				}
 			} else {
-				setErrorMessage('Invalid Image File')
-				setSelectedImage(null)
+				//setErrorMessage('Invalid Image File')
+				setISelected(null)
 				return
 			}
 			setServerLink(S)
 			reader.readAsDataURL(file)
 		}
+		// 이미지 받아서 서버로 토스
+		//handleSubmit()
 	}
-
-	const isImageFile = (file) => {
-		return file.type.startsWith('image/')
-	}
-
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-	const handleCancel = () => {
-		setSelectedImage(null)
-		setImageSize({width: 0, height: 0})
-		setErrorMessage('')
-		setDownloadBtn(false)
-		setDownloadLink('')
-		setServerLink(S)
-		setUploadOrDownload("n")
-		setIsWhatServer("")
-		optionInitialize()
-	}
-
-	const optionInitialize = () => {
-		setIsThisSimulate("normal")
-		setBlurMaskSize({width:11, height:11})
-	}
-	// const handleRadioSelect = (selected) => {
-	// 	setErrorMessage('')
-	// 	setDownloadBtn(false)
-	// 	setDownloadLink('')
-	// 	setSelectedOperation(selected)
-	// 	setServerLink(S)
-	// }
-
+	// 이미지 서버에 보냄 - 받아서 출력까지
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 
 		// image trasmit logic by axios
-		if(selectedImage) {
+		if(iSelected) {
 			try{
-				setUploadOrDownload("u_ing")
+				//setUploadOrDownload("u_ing")
 				const formData = new FormData()
-				formData.append('image', selectedImage)
+				formData.append('image', iSelected)
 				formData.append('option', selectedOperation)
 				formData.append('fileName', fileName)
-				formData.append('sentType', isThisSimulate)
+				//formData.append('sentType', isThisSimulate)
 				// add plus option
-				formData.append('blurMaskSize',JSON.stringify(blurMaskSize))
+				formData.append('blurMaskSize',JSON.stringify(mSize))
 
 				let response = await axios.post(serverLink + '/DoIt', formData)
 				if (response.data['status'] === "toss"){
@@ -154,8 +140,8 @@ function App(props) {
 				setDownloadLink(response.data['downloadUrl'])
 
 				// active download button
-				setDownloadBtn(true)
-				setUploadOrDownload("u_complete")
+				//setDownloadBtn(true)
+				//setUploadOrDownload("u_complete")
 
 			} catch(err){
 				console.error('Submit Error',err)
@@ -163,7 +149,7 @@ function App(props) {
 		}
 	}
 
-	// const handleDownload = () => {
+	const handleDownload = () => {
 	// 	setUploadOrDownload("d_ing")
 	// 	if (downloadLink) {
 	// 		axios
@@ -183,10 +169,10 @@ function App(props) {
 	// 				console.error('Error downloading file:', error)
 	// 			})
 	// 	}
-	// }
+	}
 
 	// 시뮬레이션 전용으로, 다른 옵션은 모두 랜덤으로 진행함
-	// const handleSimulateChange = (event) => {
+	const handleSimulateChange = (event) => {
 	// 	if(event.target.checked){
 	// 		// 일단 기본세팅
 	// 		handleCancel()
@@ -203,279 +189,140 @@ function App(props) {
 	// 		handleCancel()
 	// 	}
 
-	// }
-	
+	}
+
+	// 작업 선택 끝 -> 서버에 보낼 데이터를 갱신
+	const addCompleteTask = (who, data) => {
+		const task = taskList.find(item => item[0] === who)
+		if (task) {
+			setComTaskList(prev => [...prev, [...task, comTaskId, data]])
+		}
+		comTaskId += 1
+	} 
+
+
+	//onCreate
+	useEffect ( () => {
+		// 함수 정의
+		const updateContainerH = () => {
+			const containerW = imgContainerRef.current.clientWidth
+			setContainerH(containerW)
+		}
+		// eslint-disable-next-line 
+		const getTasks = async () => {
+			let res = await axios.get(serverLink + '/tasks')
+			setTaskList(res.data)
+		}
+
+		// 초기 로딩 시 호출
+		updateContainerH()
+
+		// 윈도우 크기 변경할 때마다 호출
+		window.addEventListener('resize',updateContainerH)
+		
+		// 서버에 가능한 작업목록 요청, 저장
+		// getTasks()
+		
+		// 컴포넌트 언마운트 - 이벤트 리스너 제거
+		return () => { window.removeEventListener('resize',updateContainerH) }
+	}, [])
+
 	return (
-		<div class="main">
+		<div className="main">
 			
 			<div id="mainText" style={{ justifyContent: 'center', marginBottom: '-2%'}}>
-					<h1 style={{ fontSize: "4vw" }}>image transformer</h1>
+					<h1 style={{ fontSize: "3vw" }}>image transformer</h1>
 			</div>
 			
-			<div ref={imgContainerRef} class="imgRow" style={{height: `${containerH/2}px`}}>
+			<div ref={imgContainerRef} className="imgRow" style={{height: `${containerH/2}px`}}>
 				<form onSubmit={handleSubmit} style={{ width: "50%", margin: '5px' }}>
 					{/* input image pannel */}
 					<div
 						{...getRootProps()}
-						id="imgUploadContainer"
-						class="imgBox" style={{height: `${containerH/2}px`}}
+						id="imgUploadContainer" className="imgBox" style={{height: `${containerH/2}px`}}
 					>
 						{/* input image place message */}				
 						<input {...getInputProps()} />
-						{isDragActive && !selectedImage ? (
-							<p style={{ fontSize: "1.5vw" }}>drop image here</p>
-						) : !selectedImage ? (
-							<React.Fragment> <p style={{ fontSize: "1.5vw" }}>select image by "CLICK" or drag and drop</p> </React.Fragment>
-						) : null}
+						
+						{isDragActive && !iSelected ? ( <p style={{ fontSize: "1.2vw" }}>drop image here</p> ) 
+						: !iSelected ? ( <React.Fragment> <p style={{ fontSize: "1.2vw" }}>select image by "CLICK" or drag and drop</p> </React.Fragment> ) : null}
 
 						{/* selected image */}
-						{selectedImage && (
-							<img
-								src={isThisSimulate === "sim" ? "Marigold.webp" : URL.createObjectURL(selectedImage)}
-								alt="selected" class="img"
-							/>
-						)}
+						{/*{iSelected && ( <img src={isThisSimulate === "sim" ? "Marigold.webp" : URL.createObjectURL(iSelected)} alt="selected" className="img" /> )}*/}
+						{iSelected && <img src={URL.createObjectURL(iSelected)} alt="selected" className="img"/>}
 					</div>
 				</form>
 
 				<div style={{ width: "50%", margin: '5px' }}>
 					<div
-						id="imgDownloadContainer"
-						class="imgBox" style={{height: `${containerH/2}px`}}
+						id="imgDownloadContainer" className="imgBox" style={{height: `${containerH/2}px`}}
 					>
-						<React.Fragment> <p style={{ fontSize: "1.5vw" }}>transformed image from server</p> </React.Fragment>
+						<React.Fragment> <p style={{ fontSize: "1.2vw" }}>transformed image from server</p> </React.Fragment>
 						{/* 서버에서 이미지 받아서 출력하는 곳 */}
 					</div>
 				</div>
 			</div>
+
+			{/* 서버로부터 받아온 옵션목록 출력 */}
+			<div className="optRow">
+				<div className="selectOpColumn">
+					{taskList.map( (item, index) => (
+						<button disabled={iSelected ? false : true} key={index} className="selectOpBtn" onClick={() => {setCurTask(item[0]); setShowComTask(-1)}}>{item[1]}</button>
+					))}
+				</div>
+
+				<div className="addMoreOp" onClick={() => {showComTask !== -1 && setShowComTask(-1)}}>
+					{(showComTask !== -1) ? (
+						<>
+							<p>Option #{showComTask}</p>
+							<p className='opName'>{comTaskList[showComTask][1]}</p>
+							<p className='opName'>{comTaskList[showComTask][2]}</p>
 		
-			<div class="optRow">
-				{/* 사용할 수 있는 정보처리의 옵션들도 모두 서버에서 받아오는 게 맞지 않을까 */}
-				<div class="selectOpColumn">
-					<button class="selectOpBtn">옵션 1</button>
-					<button class="selectOpBtn">옵션 2</button>
-					<button class="selectOpBtn">옵션 3</button>
-					<button class="selectOpBtn">옵션 4</button>
-					<button class="selectOpBtn">옵션 5</button>
-					<button class="selectOpBtn">옵션 6</button>
-					<button class="selectOpBtn">옵션 7</button>
-					<button class="selectOpBtn">옵션 8</button>
-					<button class="selectOpBtn">옵션 9</button>
-					<button class="selectOpBtn">옵션 10</button>
-					<button class="selectOpBtn">옵션 11</button>
-					<button class="selectOpBtn">옵션 12</button>
+							{Object.entries(comTaskList[showComTask][4]).map(([key, value]) => (
+								<p className='opName'>{key} : {value}</p>
+							))}
+						</>
+					) :(curTask === -1) ? null : (
+						<>
+							<p className='opName'>{taskList[curTask][1]}</p>
+							<p className='opName'>{taskList[curTask][2]}</p>
+							{(curTask === 0) ? (
+								<BlurOption 
+									submit={addCompleteTask}
+									i={iSize} m={mSize} setm={setMSize}
+									reset={resetOptSelected}
+								/>
+							) : (curTask === 1) ? (
+								<InverseOption submit={addCompleteTask} reset={resetOptSelected} />
+							) : null}
+						</>
+					)}
 				</div>
-				<div style={{ width: "60%", border: '1.5px solid black',  margin:'5px', backgroundColor: "#eee" }}>
-					옵션창
-				</div>
-				<div class="selectedOpColumn">
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw", width: "100%"}}>옵션 1</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 2</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 3</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 4</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 5</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw", width: "100%"}}>옵션 1</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 2</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 3</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 4</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
-					<div class="selectedOpRow">
-						<div style={{ fontSize: "1.2vw"}}>옵션 5</div>
-						<button title="확인/삭제" style={{ fontSize: "1.2vw", padding: "0.6vw" }}></button>
-					</div>
+
+				<div className="selectedOpColumn">
+					{comTaskList.map( (item, index) => (
+						<div key={index} className="selectedOpRow">
+							<div style={{ fontSize: "0.9vw", width: "100%"}}>{item[1]}</div>
+							<button title="확인/삭제" style={{ fontSize: "0.9vw", padding: "0.6vw" }} onClick={() => {setShowComTask(index)}}></button>
+						</div>
+					))}			
 				</div>
 			</div>
 		
 		</div>
-		
 
-		// <div style={{ display: 'flex', justifyContent: 'center' }}>
-		// 	{/* selected image */}
-		// 	<div style={{ margin: '20px' }}>
-		// 		<div style={{justifyContent: 'center'}}>
-		// 			<h1 style={{ fontSize: isMobile ? '24px' : '36px' }}>image transformer</h1>
-		// 		</div>
-		// 		<form onSubmit={handleSubmit}>
-
-		// 			{/* input image pannel */}
-		// 			<div
-		// 				{...getRootProps()}
-		// 				id="imgUploadContainer"
-		// 				style={{
-		// 					width:  isMobile ? 300 : 500, 
-		// 					height: isMobile ? 300 : 500,
-		// 					border: '1.5px dashed black',
-		// 					display: 'flex',
-		// 					flexDirection: 'column',
-		// 					alignItems: 'center',
-		// 					justifyContent: 'center',
-		// 					cursor: 'pointer',
-		// 					marginBottom: '10px',
-		// 					position: 'relative',
-		// 				}}
-		// 			>
-
-		// 				{/* input image place message */}
-		// 				<input {...getInputProps()} />
-		// 				{isDragActive && !selectedImage ? (
-		// 					<p style={{ fontSize: isMobile ? '10px' : '18px' }}>drop image here</p>
-		// 				) : !selectedImage ? (
-		// 					<React.Fragment>
-		// 						<p style={{ fontSize: isMobile ? '10px' : '18px' }}>select image by click or drag and drop</p>
-		// 					</React.Fragment>
-		// 				) : null}
-
-		// 				{/* selected image */}
-		// 				{selectedImage && (
-		// 					<img
-		// 						src={isThisSimulate === "sim" ? "Marigold.webp" : URL.createObjectURL(selectedImage)}
-		// 						alt="selected"
-		// 						style={{
-		// 							maxWidth: '100%', maxHeight: '100%',
-		// 							position: 'absolute',
-		// 							top: '50%', left: '50%',
-		// 							transform: 'translate(-50%, -50%)',
-		// 						}}
-		// 					/>
-		// 				)}
-		// 			</div>
-
-		// 			{/* print information of selected image */}
-		// 			{errorMessage ? (
-		// 				<div>
-		// 					<p style={{ color: 'red' }}>{errorMessage} - {fileName}</p>
-		// 					<p style={{ color: 'white', userSelect: 'none' }}>T</p>
-		// 				</div>
-		// 			) : selectedImage ? (
-		// 				<div>
-		// 					<p>{selectedImage.name}</p>
-		// 					<p>{imageSize.width} x {imageSize.height}</p>
-		// 				</div>
-		// 			) : (
-		// 				<div>
-		// 					<p style={{ color: 'white', userSelect: 'none' }}>T</p>
-		// 					<p style={{ color: 'white', userSelect: 'none' }}>T</p>
-		// 				</div>
-		// 			)}
-
-		// 			{/* select option */}
-		// 			<div style={{marginBottom: '10px'}}>
-		// 				<label>
-		// 					<input
-		// 						type="radio" value="Blur"
-		// 						checked={selectedOperation === 'Blur'}
-		// 						onChange={() => handleRadioSelect('Blur')}
-		// 						disabled={uploadOrDownload !== "n"}
-		// 					/>
-		// 					Blur
-		// 				</label>
-		// 				<label>
-		// 					<input
-		// 						type="radio" value="Inverse"
-		// 						checked={selectedOperation === 'Inverse'}
-		// 						onChange={() => handleRadioSelect('Inverse')}
-		// 						disabled={uploadOrDownload !== "n"}
-		// 					/>
-		// 					Inverse
-		// 				</label>
-		// 			</div>
-
-		// 			{/* option and option */}
-		// 			{(selectedOperation === "Blur" && selectedImage) ? (
-		// 				<div style={{ marginBottom: '10px', display: 'flex' }}>
-		// 					<div style={{ marginRight: '10px' }}>
-		// 						<label>width (11 ~ {Math.floor((imageSize.width - 11) / 2) * 2 - 1})</label><br />
-		// 						<label>height(11 ~ {Math.floor((imageSize.height - 11) / 2) * 2 - 1})</label>
-		// 					</div>
-		// 					<div>
-		// 						<input
-		// 						type="range" name="blurWidth"
-		// 						value={blurMaskSize.width}
-		// 						min={11} max={Math.floor((imageSize.width - 10) / 2) * 2 - 1} step="2"
-		// 						disabled={uploadOrDownload !== "n"} onChange={handleBlurWidthChange}
-		// 						/>{blurMaskSize.width}<br />
-								
-		// 						<input
-		// 						type="range" name="blurHeight"
-		// 						value={blurMaskSize.height}
-		// 						min={11} max={Math.floor((imageSize.height - 10) / 2) * 2 - 1} step="2"
-		// 						disabled={uploadOrDownload !== "n"} onChange={handleBlurHeightChange}
-		// 						/>{blurMaskSize.height}
-		// 					</div>
-		// 				</div>
-		// 			) : null}
-
-
-
-
-		// 			{/* buttons */}
-		// 			<div style={{marginBottom: '10px'}}>
-		// 				<button type="button" id="cancelBtn" onClick={handleCancel} disabled={!selectedImage}>
-		// 					cancel
-		// 				</button>
-		// 				{downloadBtn ? (
-		// 					<button type="button" id="downloadBtn" onClick={handleDownload}>
-		// 						download
-		// 					</button>
-		// 				) : (
-		// 					<button type="submit" id="uploadBtn" onClick={handleSubmit} disabled={!selectedImage || errorMessage}>
-		// 						upload
-		// 					</button>
-		// 				)}
-		// 			</div>
-
-		// 			{/* simulation checkbox */}
-		// 			{(servType === "simulate") ? (
-		// 				<div style={{marginBottom: '10px'}}>
-		// 					<input type="checkbox" id="simulateCheckbox" checked={isThisSimulate === "sim"} onChange={handleSimulateChange}/>
-		// 					<label>Simulation?</label>
-		// 				</div>
-		// 			) : null}
-
-		// 			{/* status message */}
-		// 			<div style={{marginBottom: '10px'}}>
-		// 				{(uploadOrDownload === "u_ing") ? (
-		// 					<label id="uploading">uploading... </label>
-		// 				) : (uploadOrDownload === "u_complete") ? (
-		// 					<label id="uploaded">upload complete. </label>
-		// 				) : (uploadOrDownload === "d_ing") ? (
-		// 					<label id="downloading">downloading... </label>
-		// 				) : (uploadOrDownload === "d_complete") ? (
-		// 					<label id="downloaded">download complete. </label>
-		// 				) : null}
-		// 				{(isWhatServer !== "") ? (<label id="whatServer">{isWhatServer}</label>) : (<label>{isWhatServer}</label>)}
-		// 			</div>
-
-		// 		</form>
-		// 	</div>
-		// </div>
 	)
 }
 
 export default App
+
+// 일단 들어가자마자 서버한테 연락해야함 -ok
+// 받아온 정보를 토대로 할 수 있는 옵션버튼을 생성해야 함 - 비활성화 - ok
+
+// 이미지를 받아오면 바로 서버에게 보냄 - 결과 이미지를 받아서 출력 - not yet - 문제가 있는데 상태 도입하면 해결될지도
+
+// 옵션버튼을 클릭하면 그에대한 상세옵션 창이 정보에 맞게 떠야 함 - ok
+// 상세옵션 창에서 확인 클릭하면 서버로 바로 요청 들어가야 함 -not yet
+// 받은 거 출력, 적용후 옵션이 떠야 함 - 버튼 클릭하면 상세옵션 떠야하고 - not yet
+
+// 옵
